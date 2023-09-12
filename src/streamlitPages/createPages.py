@@ -8,6 +8,7 @@ from markdownText.databaseMarkdown import MARKDOWN as databaseMarkdown
 from utils.pdfReader import read_pdf
 
 from patterns.database import *
+import os
 
 load_dotenv()
 

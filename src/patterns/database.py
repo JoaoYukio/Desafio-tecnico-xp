@@ -9,6 +9,7 @@ from langchain.text_splitter import (
 from langchain.docstore.document import Document
 
 from langchain.document_loaders import DirectoryLoader
+import os
 
 
 class DatabaseInterface(ABC):
@@ -49,7 +50,14 @@ class ChromaDatabase(DatabaseInterface):
     def __init__(self, embeddings: OpenAIEmbeddings, persist_directory: str):
         self.embeddings = embeddings
         self.persist_directory = persist_directory
-        self.docsearch = None
+        if os.path.exists(self.persist_directory):
+            self.docsearch = Chroma(
+                persist_directory=self.persist_directory,
+                embedding_function=self.embeddings,
+            )
+            print("Database loaded successfully.")
+        else:
+            self.docsearch = None
 
     def load_documents(self, directory: str) -> Document:
         return DirectoryLoader(directory).load()
@@ -117,7 +125,7 @@ class DatabaseFactory:
         """
         if database_type == "chroma":
             embeddings = kwargs.get("embeddings", OpenAIEmbeddings())
-            persist_directory = kwargs.get("persist_directory", "chroma_store")
+            persist_directory = kwargs.get("persist_directory", "./data/chroma_store")
             return ChromaDatabase(
                 embeddings=embeddings, persist_directory=persist_directory
             )
