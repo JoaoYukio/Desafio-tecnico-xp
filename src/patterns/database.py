@@ -10,6 +10,7 @@ from langchain.docstore.document import Document
 
 from langchain.document_loaders import DirectoryLoader
 import os
+import shutil
 
 
 class DatabaseInterface(ABC):
@@ -58,6 +59,7 @@ class ChromaDatabase(DatabaseInterface):
             print("Database loaded successfully.")
         else:
             self.docsearch = None
+        # self.docsearch = None
 
     def load_documents(self, directory: str) -> Document:
         return DirectoryLoader(directory).load()
@@ -81,8 +83,11 @@ class ChromaDatabase(DatabaseInterface):
                 documents=self.text_splitter(docs),
                 embedding=self.embeddings,
                 persist_directory=self.persist_directory,
+                collection_name="myDB",
             )
             self.docsearch.persist()
+        else:
+            self.append_documents(docs)
 
     def connect_fromText(self, text: str):
         if not self.docsearch:
@@ -90,8 +95,11 @@ class ChromaDatabase(DatabaseInterface):
                 texts=self.text_splitter(text),
                 embedding=self.embeddings,
                 persist_directory=self.persist_directory,
+                collection_name="myDB",
             )
             self.docsearch.persist()
+        else:
+            self.append_text(text)
 
     def append_documents(self, documents: list) -> None:
         if not self.docsearch:
@@ -105,12 +113,28 @@ class ChromaDatabase(DatabaseInterface):
             return
         self.docsearch.add_texts(texts=text)
 
-    def query(self, query_string: str) -> list:
+    def query(self, query_string: str, num_res=5) -> list:
         if self.docsearch:
-            return self.docsearch.similarity_search(query_string, k=5)
+            return self.docsearch.similarity_search(query_string, k=num_res)
         else:
             print("Erro: Banco de dados Chroma não está conectado.")
             return []
+
+    def get_vector_store(self):
+        return self.docsearch
+
+    def delete_persistent_database(self) -> str:
+        try:
+            if self.docsearch:
+                self.docsearch.delete_collection()
+                self.docsearch = None
+            if os.path.exists(self.persist_directory):
+                shutil.rmtree(self.persist_directory)
+                return f"Banco de dados em {self.persist_directory} foi excluído com sucesso."
+            else:
+                return f"Nenhum banco de dados encontrado em {self.persist_directory}."
+        except PermissionError:
+            return f"Erro: Não foi possível excluir o banco de dados em {self.persist_directory} porque está sendo usado por outro processo."
 
 
 class DatabaseFactory:

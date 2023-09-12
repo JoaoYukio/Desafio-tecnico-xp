@@ -3,6 +3,9 @@ from streamlit_option_menu import option_menu
 from langchain.embeddings import OpenAIEmbeddings
 from dotenv import load_dotenv
 
+from langchain.llms import OpenAI
+from langchain.chains import RetrievalQA
+
 from markdownText.databaseMarkdown import MARKDOWN as databaseMarkdown
 
 from utils.pdfReader import read_pdf
@@ -28,7 +31,14 @@ def create_chat_page():
         b = st.chat_input("Digite o que deseja pesquisar.")
         if st.session_state.db != None:
             if b:
-                st.write(st.session_state.db.query(b))
+                qa = RetrievalQA.from_chain_type(
+                    llm=OpenAI(),
+                    chain_type="stuff",
+                    retriever=st.session_state.db.get_vector_store().as_retriever(),
+                )
+                # st.write(st.session_state.db.query(b))
+                res = qa({"query": b})
+                st.write(res)
 
     # if st.button("Add"):
     #     st.session_state.tabs.append("New Tab")
@@ -57,7 +67,12 @@ def create_chat_page():
 
 def create_config_page():
     databases = ["Pinecone", "Chroma"]
-    radio = st.radio("Databases", databases, help=databaseMarkdown)
+    radio = st.radio(
+        "Databases",
+        databases,
+        help=databaseMarkdown,
+        index=1,
+    )
 
     if radio == "Pinecone":
         with st.expander("Configurações Pinecone", expanded=True):
@@ -84,7 +99,7 @@ def create_config_page():
         directory = "./data"
         db_type = "chroma"
         embeddings = OpenAIEmbeddings()
-        persist_directory = "./data/chroma_store"
+        persist_directory = "./data/chroma_store/"
 
         db = DatabaseFactory.create_database(
             database_type=db_type,
@@ -93,3 +108,11 @@ def create_config_page():
         )
 
         st.session_state.db = db
+        if st.session_state.db != None:
+            bDeletar = st.button("Deletar dados persistentes")
+            if bDeletar:
+                st.write(db.delete_persistent_database())
+
+        bShow = st.button("Mostrar documentos")
+        if bShow:
+            st.write(db.list_collections())
