@@ -8,6 +8,10 @@ streamlit = "*"
 langchain = "*"
 python-dotenv = "*"
 pypdf2 = "*"
+streamlit-option-menu = "*"
+chromadb = "*"
+tiktoken = "*"
+openai = "*"
 
 [dev-packages]
 
