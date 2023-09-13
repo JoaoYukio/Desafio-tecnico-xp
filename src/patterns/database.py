@@ -51,15 +51,19 @@ class ChromaDatabase(DatabaseInterface):
     def __init__(self, embeddings: OpenAIEmbeddings, persist_directory: str):
         self.embeddings = embeddings
         self.persist_directory = persist_directory
-        if os.path.exists(self.persist_directory):
+
+        def is_directory_empty(dir_path):
+            return not bool(os.listdir(dir_path))
+
+        if is_directory_empty(self.persist_directory):
+            print("DB vazio")
+            self.docsearch = None
+        else:
             self.docsearch = Chroma(
                 persist_directory=self.persist_directory,
                 embedding_function=self.embeddings,
             )
             print("Database loaded successfully.")
-        else:
-            self.docsearch = None
-        # self.docsearch = None
 
     def load_documents(self, directory: str) -> Document:
         return DirectoryLoader(directory).load()
@@ -78,28 +82,39 @@ class ChromaDatabase(DatabaseInterface):
         ).split_text(text)
 
     def connect_fromDoc(self, docs: list):
-        if not self.docsearch:
-            self.docsearch = Chroma.from_documents(
-                documents=self.text_splitter(docs),
-                embedding=self.embeddings,
-                persist_directory=self.persist_directory,
-                collection_name="myDB",
-            )
-            self.docsearch.persist()
-        else:
-            self.append_documents(docs)
+        # if not self.docsearch:
+        #     self.docsearch = Chroma.from_documents(
+        #         documents=self.text_splitter(docs),
+        #         embedding=self.embeddings,
+        #         persist_directory=self.persist_directory,
+        #     )
+        #     self.docsearch.persist()
+        # else:
+        #     print("Erro: Banco de dados Chroma já está conectado.")
+        self.docsearch = Chroma.from_documents(
+            documents=self.text_splitter(docs),
+            embedding=self.embeddings,
+            persist_directory=self.persist_directory,
+        )
+        self.docsearch.persist()
 
     def connect_fromText(self, text: str):
-        if not self.docsearch:
-            self.docsearch = Chroma.from_texts(
-                texts=self.text_splitter(text),
-                embedding=self.embeddings,
-                persist_directory=self.persist_directory,
-                collection_name="myDB",
-            )
-            self.docsearch.persist()
-        else:
-            self.append_text(text)
+        # if not self.docsearch:
+        #     print("Criando banco de dados Chroma...")
+        #     self.docsearch = Chroma.from_texts(
+        #         texts=self.text_splitter(text),
+        #         embedding=self.embeddings,
+        #         persist_directory=self.persist_directory,
+        #     )
+        #     self.docsearch.persist()
+        # else:
+        #     print("Erro: Banco de dados Chroma já está conectado.")
+        self.docsearch = Chroma.from_texts(
+            texts=self.text_splitter(text),
+            embedding=self.embeddings,
+            persist_directory=self.persist_directory,
+        )
+        self.docsearch.persist()
 
     def append_documents(self, documents: list) -> None:
         if not self.docsearch:

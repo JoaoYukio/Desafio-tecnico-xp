@@ -15,35 +15,25 @@ import os
 
 load_dotenv()
 
-if st.session_state.get("db") == None:
+if "db" not in st.session_state:
+    print("DB nao criado")
     st.session_state.db = None
 
 
 def create_chat_page():
-    st.session_state.tabs = ["Chat"]
+    b = st.chat_input("Digite o que deseja pesquisar.")
+    if st.session_state.db != None:
+        if b:
+            qa = RetrievalQA.from_chain_type(
+                llm=OpenAI(temperature=0.3),
+                chain_type="stuff",
+                retriever=st.session_state.db.get_vector_store().as_retriever(),
+            )
+            # st.write(st.session_state.db.query(b))
+            res = qa({"query": b})
 
-    menu = option_menu(
-        menu_title=None,
-        options=st.session_state.tabs,
-    )
-
-    if menu == "Chat":
-        b = st.chat_input("Digite o que deseja pesquisar.")
-        if st.session_state.db != None:
-            if b:
-                qa = RetrievalQA.from_chain_type(
-                    llm=OpenAI(),
-                    chain_type="stuff",
-                    retriever=st.session_state.db.get_vector_store().as_retriever(),
-                )
-                # st.write(st.session_state.db.query(b))
-                res = qa({"query": b})
-                st.write(res)
-
-    # if st.button("Add"):
-    #     st.session_state.tabs.append("New Tab")
-    #     st.session_state.tabs = list(set(st.session_state.tabs))
-    #     st.experimental_rerun()
+            #! TODO: Adicionar quais textos foram feito upload e criar um template para perguntar coisas especificas
+            st.write(res)
 
     with st.sidebar:
         st.subheader("Ferramentas")
@@ -54,15 +44,23 @@ def create_chat_page():
                 type=["pdf"],
                 accept_multiple_files=False,
             )
-            if st.button("Carregar"):
+            bLoad = st.button("Carregar")
+            if bLoad:
                 with st.spinner("Processando dados..."):
-                    if st.session_state.db != None:
+                    #! TODO: Desabilitar o botao de enviar enquanto o arquivo esta sendo processado
+                    try:
                         text = read_pdf(pdf_doc)
-                        st.session_state.db.connect_fromText(text)
-                    else:
-                        st.error("Por favor, conecte-se a um banco de dados primeiro.")
-                    # st.write(text)
-                st.success("Documento carregado com sucesso!")
+                    except ValueError:
+                        st.error("Por favor, selecione um arquivo PDF válido.")
+                        return
+                    st.session_state.db.connect_fromText(text)
+                    st.success("Banco criado com sucesso!")
+
+        with st.expander("Selecione os modelos", expanded=False):
+            sModel = st.selectbox(
+                "Modelo de linguagem", ["gpt-3.5-turbo", "Outros modelos"]
+            )
+            st.session_state.model = sModel
 
 
 def create_config_page():
@@ -108,11 +106,3 @@ def create_config_page():
         )
 
         st.session_state.db = db
-        if st.session_state.db != None:
-            bDeletar = st.button("Deletar dados persistentes")
-            if bDeletar:
-                st.write(db.delete_persistent_database())
-
-        bShow = st.button("Mostrar documentos")
-        if bShow:
-            st.write(db.list_collections())

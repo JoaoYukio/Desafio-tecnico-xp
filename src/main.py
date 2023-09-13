@@ -14,6 +14,7 @@ def main():
             menu_title=None,
             options=["Chat", "Configurações"],
             icons=["chat-dots", "gear"],
+            manual_select=1,
         )
 
     if pageSelection == "Chat":
