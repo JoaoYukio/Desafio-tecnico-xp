@@ -8,7 +8,10 @@ from langchain.chains import RetrievalQA
 
 from markdownText.databaseMarkdown import MARKDOWN as databaseMarkdown
 
-from utils.pdfReader import read_pdf
+from utils.pdfReader import read_pdf, save_pdf_to_folder
+
+from utils.ocr import img_to_text
+from PIL import Image
 
 from patterns.database import *
 import os
@@ -30,6 +33,8 @@ def create_chat_page():
                 retriever=st.session_state.db.get_vector_store().as_retriever(),
             )
             # st.write(st.session_state.db.query(b))
+            ##! TODO: Adicionar prompt engineering aqui
+
             res = qa({"query": b})
 
             #! TODO: Adicionar quais textos foram feito upload e criar um template para perguntar coisas especificas
@@ -44,10 +49,20 @@ def create_chat_page():
                 type=["pdf"],
                 accept_multiple_files=False,
             )
-            bLoad = st.button("Carregar")
+            cols = st.columns(2)
+            with cols[0]:
+                bLoad = st.button("Salvar no DB")
+            with cols[1]:
+                bSave = st.button("Salvar")
+            if bSave:
+                if pdf_doc:
+                    try:
+                        saved_path = save_pdf_to_folder(pdf_doc, "./data/pdf_files/")
+                        st.success(f"Arquivo salvo em: {saved_path}")
+                    except ValueError as e:
+                        st.error("Por favor, selecione um arquivo PDF válido.")
             if bLoad:
                 with st.spinner("Processando dados..."):
-                    #! TODO: Desabilitar o botao de enviar enquanto o arquivo esta sendo processado
                     try:
                         text = read_pdf(pdf_doc)
                     except ValueError:
@@ -55,6 +70,24 @@ def create_chat_page():
                         return
                     st.session_state.db.connect_fromText(text)
                     st.success("Banco criado com sucesso!")
+
+        with st.expander("Upload de imagens", expanded=False):
+            uploaded_file = st.file_uploader(
+                "Escolha uma imagem", type=["jpg", "jpeg", "png"]
+            )
+            if uploaded_file:
+                # Abre a imagem usando PIL
+                img = Image.open(uploaded_file)
+
+                # Mostra a imagem no Streamlit
+                st.image(img, caption="Imagem carregada.", use_column_width=True)
+
+                # Extrai texto usando OCR
+                extracted_text = img_to_text(img)
+
+                # Mostra o texto extraído
+                st.write("Texto extraído:")
+                st.write(extracted_text)
 
         with st.expander("Selecione os modelos", expanded=False):
             sModel = st.selectbox(

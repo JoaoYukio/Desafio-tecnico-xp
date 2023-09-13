@@ -12,6 +12,8 @@ streamlit-option-menu = "*"
 chromadb = "*"
 tiktoken = "*"
 openai = "*"
+pytesseract = "*"
+pillow = "*"
 
 [dev-packages]
 

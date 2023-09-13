@@ -7,7 +7,7 @@ from streamlitPages.createPages import create_chat_page, create_config_page
 
 
 def main():
-    # st.set_page_config(page_title="Desafio Técnico XP", layout="wide")
+    st.set_page_config(page_title="Desafio Técnico XP", layout="wide")
 
     with st.sidebar:
         pageSelection = option_menu(
