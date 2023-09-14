@@ -12,6 +12,9 @@ from langchain.document_loaders import DirectoryLoader
 import os
 import shutil
 
+# from sklearn.decomposition import PCA
+# import matplotlib.pyplot as plt
+
 
 class DatabaseInterface(ABC):
     @abstractmethod
@@ -92,7 +95,7 @@ class ChromaDatabase(DatabaseInterface):
         # else:
         #     print("Erro: Banco de dados Chroma já está conectado.")
         self.docsearch = Chroma.from_documents(
-            documents=self.text_splitter(docs),
+            documents=self.doc_splitter(docs),
             embedding=self.embeddings,
             persist_directory=self.persist_directory,
         )
@@ -137,6 +140,10 @@ class ChromaDatabase(DatabaseInterface):
 
     def get_vector_store(self):
         return self.docsearch
+
+    def get_vectors(self) -> list:
+        vectors = self.docsearch.get()
+        return vectors
 
     def delete_persistent_database(self) -> str:
         try:

@@ -12,8 +12,10 @@ streamlit-option-menu = "*"
 chromadb = "*"
 tiktoken = "*"
 openai = "*"
-pytesseract = "*"
 pillow = "*"
+easyocr = "*"
+pypdf = "*"
+wikipedia = "*"
 
 [dev-packages]
 

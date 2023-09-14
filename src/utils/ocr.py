@@ -1,6 +1,9 @@
 import streamlit as st
 from PIL import Image
-import pytesseract
+import easyocr
+import numpy as np
+
+reader = easyocr.Reader(["pt", "en"])
 
 
 def img_to_text(img: Image.Image) -> str:
@@ -13,8 +16,7 @@ def img_to_text(img: Image.Image) -> str:
     Retorna:
     - str: O texto extraído da imagem.
     """
+    img_np = np.array(img)
+    result = reader.readtext(img_np, detail=0, paragraph=True)
 
-    # Usa pytesseract para extrair texto
-    text = pytesseract.image_to_string(img)
-
-    return text
+    return result
