@@ -5,7 +5,10 @@ from langchain.agents import initialize_agent, Tool, AgentType
 
 def search_wikipedia(query: str, load_max_docs: int = 1):
     docs = WikipediaLoader(query=query, load_max_docs=load_max_docs).load()
-    return docs[0].page_content[:400]
+    if docs:
+        return docs[0].page_content[:400]
+    else:
+        return "Nenhum documento encontrado."
 
 
 def lookup(llm, num_perguntas: int, text: str) -> str:
