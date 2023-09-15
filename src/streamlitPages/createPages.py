@@ -7,6 +7,7 @@ from langchain.llms import OpenAI
 from langchain.chains import RetrievalQA
 
 from markdownText.databaseMarkdown import MARKDOWN as databaseMarkdown
+from markdownText.RCIMarkdown import MARKDOWN as RCIMarkdown
 
 from utils.pdfReader import read_pdf, save_pdf_to_folder
 from utils.summarize import summarize
@@ -45,11 +46,11 @@ def create_chat_page():
                 return_source_documents=True,
             )
             # st.write(st.session_state.db.query(b))
-            ##! TODO: Adicionar prompt engineering aqui
 
             res = qa({"query": b})
 
             #! TODO: Adicionar quais textos foram feito upload e criar um template para perguntar coisas especificas
+            #! TODO: Adicionar memory
             st.write(res)
     else:
         st.warning("Por favor, carregue um banco de dados antes de pesquisar.")
@@ -59,7 +60,9 @@ def create_chat_page():
             "Selecione um documento",
             [doc["filename"] for doc in st.session_state.uploaded_files],
         )
-        bQuestions = st.button("Perguntas sobre o documento")
+        bQuestions = st.button(
+            "Insights sobre o documento gerados usando RCI", help=RCIMarkdown
+        )
         if bQuestions:
             if qSelect:
                 qText = [
@@ -77,6 +80,9 @@ def create_chat_page():
                 q = chain_RCI(qText)
 
                 st.write(q)
+    sButton = st.button("Mostrar DB")
+    if sButton:
+        st.write(st.session_state.db.get_vectors())
 
     with st.sidebar:
         st.subheader("Ferramentas")
@@ -119,6 +125,7 @@ def create_chat_page():
                             ),
                             "file_size": pdf_doc.size,
                             "file_type": pdf_doc.type,
+                            "path": tmp_file.name,
                         }
 
                         st.session_state.uploaded_files.append(file_info)

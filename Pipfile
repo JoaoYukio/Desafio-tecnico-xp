@@ -16,6 +16,7 @@ pillow = "*"
 easyocr = "*"
 pypdf = "*"
 wikipedia = "*"
+lark = "*"
 
 [dev-packages]
 
