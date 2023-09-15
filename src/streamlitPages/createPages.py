@@ -17,6 +17,8 @@ from PyPDF2 import PdfReader
 
 from utils.saveJson import load_uploaded_files, save_uploaded_files
 
+from chains.RCIChain import chain_RCI
+
 # from utils.ocr import img_to_text
 # from PIL import Image
 
@@ -52,33 +54,29 @@ def create_chat_page():
     else:
         st.warning("Por favor, carregue um banco de dados antes de pesquisar.")
 
-    sButton = st.button("Mostrar dados")
-    if sButton:
-        if st.session_state.db != None:
-            st.write(st.session_state.db.get_vectors())
-        else:
-            st.warning("Por favor, carregue um banco de dados antes de pesquisar.")
+    with st.expander("Conversar com um documento em específico", expanded=False):
+        qSelect = st.selectbox(
+            "Selecione um documento",
+            [doc["filename"] for doc in st.session_state.uploaded_files],
+        )
+        bQuestions = st.button("Perguntas sobre o documento")
+        if bQuestions:
+            if qSelect:
+                qText = [
+                    doc["summary"]
+                    for doc in st.session_state.uploaded_files
+                    if doc["filename"] == qSelect
+                ][0]
 
-    qSelect = st.selectbox(
-        "Selecione um documento",
-        [doc["filename"] for doc in st.session_state.uploaded_files],
-    )
-    bQuestions = st.button("Perguntas sobre o documento")
-    if bQuestions:
-        if qSelect:
-            qText = [
-                doc["summary"]
-                for doc in st.session_state.uploaded_files
-                if doc["filename"] == qSelect
-            ][0]
+                # q = lookup(
+                #     llm=OpenAI(temperature=0.3),
+                #     num_perguntas=3,
+                #     text=qText,
+                # )
 
-            q = lookup(
-                llm=OpenAI(temperature=0.3),
-                num_perguntas=3,
-                text=qText,
-            )
+                q = chain_RCI(qText)
 
-            st.write(q)
+                st.write(q)
 
     with st.sidebar:
         st.subheader("Ferramentas")

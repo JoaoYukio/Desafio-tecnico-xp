@@ -4,6 +4,9 @@ from langchain.agents import initialize_agent, Tool, AgentType
 
 
 def search_wikipedia(query: str, load_max_docs: int = 1):
+    """
+    Search for a topic in Wikipedia and return the load_max_docs documents.
+    """
     docs = WikipediaLoader(query=query, load_max_docs=load_max_docs).load()
     if docs:
         return docs[0].page_content[:400]
