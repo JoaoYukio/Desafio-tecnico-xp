@@ -34,6 +34,9 @@ def create_chat_page():
         print("DB nao criado")
         st.session_state.db = None
 
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
     st.session_state.uploaded_files = load_uploaded_files()
 
     b = st.chat_input("Digite o que deseja pesquisar.")
@@ -51,7 +54,17 @@ def create_chat_page():
 
             #! TODO: Adicionar quais textos foram feito upload e criar um template para perguntar coisas especificas
             #! TODO: Adicionar memory
-            st.write(res)
+            with st.chat_message("user"):
+                st.markdown(b)
+
+            with st.chat_message("assistant"):
+                # st.write(res)
+                st.write(res["result"])
+                with st.expander("Documentos relevantes", expanded=False):
+                    for doc in res["source_documents"]:
+                        st.write(doc)
+
+            st.session_state.messages.append({"role": "user", "content": b})
     else:
         st.warning("Por favor, carregue um banco de dados antes de pesquisar.")
 
@@ -79,10 +92,11 @@ def create_chat_page():
 
                 q = chain_RCI(qText)
 
-                st.write(q)
-    sButton = st.button("Mostrar DB")
-    if sButton:
-        st.write(st.session_state.db.get_vectors())
+                with st.chat_message("assistant"):
+                    st.write(q)
+    # sButton = st.button("Mostrar DB")
+    # if sButton:
+    #     st.write(st.session_state.db.get_vectors())
 
     with st.sidebar:
         st.subheader("Ferramentas")
@@ -93,20 +107,12 @@ def create_chat_page():
                 type=["pdf"],
                 accept_multiple_files=False,
             )
-            cols = st.columns(3)
+            cols = st.columns(2)
             with cols[0]:
                 bLoad = st.button("Salvar no DB")
             with cols[1]:
-                bSave = st.button("Salvar")
-            with cols[2]:
                 bResume = st.button("Resumir")
-            if bSave:
-                if pdf_doc:
-                    try:
-                        saved_path = save_pdf_to_folder(pdf_doc, "./data/pdf_files/")
-                        st.success(f"Arquivo salvo em: {saved_path}")
-                    except ValueError as e:
-                        st.error("Por favor, selecione um arquivo PDF válido.")
+
             if bLoad:
                 with st.spinner("Processando dados..."):
                     try:

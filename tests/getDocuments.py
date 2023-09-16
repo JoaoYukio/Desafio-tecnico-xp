@@ -54,10 +54,23 @@ retriever = SelfQueryRetriever.from_llm(
     metadata_field_info=metadata_field_info,
 )
 
-docs = retriever.get_relevant_documents(
-    "Gostaria que retornasse os documentos e os ID's de cada um desses documentos em que eu falei sobre machine learning"
-)
+docs_int = db.get_vector_store().similarity_search("Jedi")
 
-# Certo agora eu gostaria que pegasse o
 
-print(docs)
+sources = []
+
+for doc in docs_int:
+    sources.append(doc.metadata["source"])
+
+print(sources)
+print(len(sources))
+
+# print("-" * 15)
+
+# newDB = Chroma.from_documents(
+#     documents=docs_int, embedding=OpenAIEmbeddings(), collection_name="test"
+# )
+
+# data = newDB.get()
+
+# print(data)
