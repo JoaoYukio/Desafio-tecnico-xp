@@ -18,11 +18,17 @@ def main():
             icons=["chat-dots", "gear"],
             manual_select=1,
         )
-
-    if pageSelection == "Chat":
-        create_chat_page()
-    elif pageSelection == "Configurações":
-        create_config_page()
+    if st.session_state.get("OPENAI_API_KEY", "") == "":
+        if pageSelection == "Chat":
+            st.warning("Por favor, configure a API antes de acessar o chat.")
+            create_config_page()
+        elif pageSelection == "Configurações":
+            create_config_page()
+    else:
+        if pageSelection == "Chat":
+            create_chat_page()
+        elif pageSelection == "Configurações":
+            create_config_page()
 
 
 if __name__ == "__main__":
