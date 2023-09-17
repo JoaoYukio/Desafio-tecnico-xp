@@ -216,7 +216,7 @@ def create_config_page():
         directory = "./data"
         db_type = "chroma"
         embeddings = OpenAIEmbeddings()
-        persist_directory = "./data/chroma_store/"
+        persist_directory = "/app/src/data/chroma_store/"
 
         db = DatabaseFactory.create_database(
             database_type=db_type,
