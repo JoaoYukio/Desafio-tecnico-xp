@@ -30,7 +30,7 @@ import os, tempfile
 
 # load_dotenv()
 
-OPENAI_API_KEY = st.session_state.get("OPEN_API_KEY", "")
+OPENAI_API_KEY = st.session_state.get("OPENAI_API_KEY", "")
 
 
 def create_chat_page():
@@ -47,7 +47,9 @@ def create_chat_page():
     if st.session_state.db.get_vector_store() != None:
         if b:
             qa = RetrievalQA.from_chain_type(
-                llm=OpenAI(temperature=0.3),
+                llm=OpenAI(
+                    temperature=0.3, openai_api_key=st.session_state["OPENAI_API_KEY"]
+                ),
                 chain_type="stuff",
                 retriever=st.session_state.db.get_vector_store().as_retriever(),
                 return_source_documents=True,
@@ -131,7 +133,11 @@ def create_chat_page():
                             "filename": pdf_doc.name,
                             "title": pdf_doc.name,
                             "summary": summarize(
-                                tmp_file.name, llm=OpenAI(temperature=0.3)
+                                tmp_file.name,
+                                llm=OpenAI(
+                                    temperature=0.3,
+                                    openai_api_key=st.session_state["OPENAI_API_KEY"],
+                                ),
                             ),
                             "file_size": pdf_doc.size,
                             "file_type": pdf_doc.type,
@@ -157,7 +163,10 @@ def create_chat_page():
                 st.write(
                     summarize(
                         tmp_file.name,
-                        llm=OpenAI(temperature=0.3),
+                        llm=OpenAI(
+                            temperature=0.3,
+                            openai_api_key=st.session_state["OPENAI_API_KEY"],
+                        ),
                     )
                 )
 
@@ -204,7 +213,7 @@ def create_config_page():
         type="password",
         placeholder="Cole sua chave de API aqui (sk-...)",
         help="Você pode obter sua chave de API em https://platform.openai.com/account/api-keys.",  # noqa: E501
-        value=st.session_state.get("OPEN_API_KEY", ""),
+        value=st.session_state.get("OPENAI_API_KEY", ""),
     )
 
     if open_api_key_input:
@@ -220,7 +229,7 @@ def create_config_page():
     else:
         st.markdown("Chave de API aberta configurada!")
         db_type = "chroma"
-        embeddings = OpenAIEmbeddings()
+        embeddings = OpenAIEmbeddings(openai_api_key=st.session_state["OPENAI_API_KEY"])
         persist_directory = "/app/src/data/chroma_store/"
 
         db = DatabaseFactory.create_database(

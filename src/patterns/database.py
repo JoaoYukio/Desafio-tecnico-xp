@@ -170,7 +170,7 @@ class DatabaseFactory:
         :return: Uma instância do banco de dados.
         """
         if database_type == "chroma":
-            embeddings = kwargs.get("embeddings", OpenAIEmbeddings())
+            embeddings = kwargs.get("embeddings", "")
             persist_directory = kwargs.get("persist_directory", "./data/chroma_store")
             return ChromaDatabase(
                 embeddings=embeddings, persist_directory=persist_directory
