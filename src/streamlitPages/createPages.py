@@ -8,10 +8,12 @@ from langchain.chains import RetrievalQA
 
 from markdownText.databaseMarkdown import MARKDOWN as databaseMarkdown
 from markdownText.RCIMarkdown import MARKDOWN as RCIMarkdown
+from markdownText.OpenAIKeyMarkdown import MARKDOWN as OpenAIKeyMarkdown
 
 from utils.pdfReader import read_pdf, save_pdf_to_folder
 from utils.summarize import summarize
 from agents.wikipedia_agent import lookup
+from utils.testOpenAIKey import is_api_key_valid
 
 from langchain.document_loaders import PyPDFLoader
 from PyPDF2 import PdfReader
@@ -26,7 +28,9 @@ from chains.RCIChain import chain_RCI
 from patterns.database import *
 import os, tempfile
 
-load_dotenv()
+# load_dotenv()
+
+OPENAI_API_KEY = st.session_state.get("OPEN_API_KEY", "")
 
 
 def create_chat_page():
@@ -90,7 +94,7 @@ def create_chat_page():
                 #     text=qText,
                 # )
 
-                q = chain_RCI(qText)
+                q = chain_RCI(qText, st.session_state["OPEN_API_KEY"])
 
                 with st.chat_message("assistant"):
                     st.write(q)
@@ -182,38 +186,39 @@ def create_chat_page():
             st.session_state.model = sModel
 
 
+def set_open_api_key(api_key: str) -> bool:
+    if is_api_key_valid(api_key):
+        st.session_state["OPENAI_API_KEY"] = api_key
+        st.session_state["open_api_key_configured"] = True
+        return True
+    else:
+        st.session_state["OPENAI_API_KEY"] = None
+        st.session_state["open_api_key_configured"] = False
+        return False
+
+
 def create_config_page():
-    databases = ["Pinecone", "Chroma"]
-    radio = st.radio(
-        "Databases",
-        databases,
-        help=databaseMarkdown,
-        index=1,
+    st.markdown(OpenAIKeyMarkdown)
+    open_api_key_input = st.text_input(
+        "Openai API Key",
+        type="password",
+        placeholder="Cole sua chave de API aqui (sk-...)",
+        help="Você pode obter sua chave de API em https://platform.openai.com/account/api-keys.",  # noqa: E501
+        value=st.session_state.get("OPEN_API_KEY", ""),
     )
 
-    if radio == "Pinecone":
-        with st.expander("Configurações Pinecone", expanded=True):
-            with st.form(key="my_form"):
-                # cols = st.columns(3)
-                # with cols[0]:
-                #     api_key = st.text_input("Pinecone API Key")
-                # with cols[1]:
-                #     index = st.text_input("Pinecone Index")
-                # with cols[2]:
-                #     environment = st.text_input("Pinecone Environment")
+    if open_api_key_input:
+        if set_open_api_key(open_api_key_input):
+            st.success("Chave de API válida!")
+        else:
+            st.warning("Chave de API inválida.")
 
-                api_key = st.text_input("Pinecone API Key")
-                index = st.text_input("Pinecone Index")
-                environment = st.text_input("Pinecone Environment")
-                if st.form_submit_button("Salvar"):
-                    if not api_key or not index or not environment:
-                        st.warning(
-                            "Por favor, preencha todos os campos antes de enviar."
-                        )
-                    else:
-                        st.success("Configurações enviadas com sucesso!")
-    elif radio == "Chroma":
-        directory = "./data"
+    if not st.session_state.get("open_api_key_configured"):
+        st.error("Configure sua chave Open API!")
+        st.session_state.db = None
+
+    else:
+        st.markdown("Chave de API aberta configurada!")
         db_type = "chroma"
         embeddings = OpenAIEmbeddings()
         persist_directory = "/app/src/data/chroma_store/"

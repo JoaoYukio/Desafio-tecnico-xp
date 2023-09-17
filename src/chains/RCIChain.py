@@ -10,12 +10,9 @@ from langchain.prompts.chat import (
     HumanMessagePromptTemplate,
 )
 
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
 from operator import itemgetter
-
-load_dotenv()
-model = ChatOpenAI(temperature=0)
 
 # ? Baseado no artigo: https://arxiv.org/abs/2303.17491
 
@@ -52,7 +49,11 @@ improvement_prompt = ChatPromptTemplate.from_messages(
 )
 
 
-def chain_RCI(initial_question: str):
+def chain_RCI(initial_question: str, api_key: str):
+    model = ChatOpenAI(
+        temperature=0,
+        openai_api_key=api_key,
+    )
     chain1 = chat_prompt | model | StrOutputParser()
 
     critique_chain = (
