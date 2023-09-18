@@ -9,6 +9,7 @@ from langchain.chains import RetrievalQA
 from markdownText.databaseMarkdown import MARKDOWN as databaseMarkdown
 from markdownText.RCIMarkdown import MARKDOWN as RCIMarkdown
 from markdownText.OpenAIKeyMarkdown import MARKDOWN as OpenAIKeyMarkdown
+from markdownText.useMarkdown import MARKDOWN as useMarkdown
 
 from utils.pdfReader import read_pdf, save_pdf_to_folder
 from utils.summarize import summarize
@@ -74,35 +75,51 @@ def create_chat_page():
     else:
         st.warning("Por favor, carregue um banco de dados antes de pesquisar.")
 
-    with st.expander("Conversar com um documento em específico", expanded=False):
-        qSelect = st.selectbox(
-            "Selecione um documento",
-            [doc["filename"] for doc in st.session_state.uploaded_files],
-        )
-        bQuestions = st.button(
-            "Insights sobre o documento gerados usando RCI", help=RCIMarkdown
-        )
-        if bQuestions:
-            if qSelect:
-                qText = [
-                    doc["summary"]
-                    for doc in st.session_state.uploaded_files
-                    if doc["filename"] == qSelect
-                ][0]
+    bCols = st.columns(2)
+    with bCols[0]:
+        with st.expander("Conversar com um documento em específico", expanded=False):
+            qSelect = st.selectbox(
+                "Selecione um documento",
+                [doc["filename"] for doc in st.session_state.uploaded_files],
+            )
 
-                # q = lookup(
-                #     llm=OpenAI(temperature=0.3),
-                #     num_perguntas=3,
-                #     text=qText,
-                # )
+            bQuestions = st.button(
+                "Insights sobre o documento gerados usando RCI", help=RCIMarkdown
+            )
+            if bQuestions:
+                if qSelect:
+                    with st.spinner("Processando dados..."):
+                        qText = [
+                            doc["summary"]
+                            for doc in st.session_state.uploaded_files
+                            if doc["filename"] == qSelect
+                        ][0]
 
-                q = chain_RCI(qText, st.session_state["OPENAI_API_KEY"])
+                        q = chain_RCI(qText, st.session_state["OPENAI_API_KEY"])
 
-                with st.chat_message("assistant"):
-                    st.write(q)
-    # sButton = st.button("Mostrar DB")
-    # if sButton:
-    #     st.write(st.session_state.db.get_vectors())
+                        with st.chat_message("assistant"):
+                            st.write(q)
+        # sButton = st.button("Mostrar DB")
+        # if sButton:
+        #     st.write(st.session_state.db.get_vectors())
+    with bCols[1]:
+        with st.expander(
+            "Pergunte sobre tópicos com dados atualizados da Wikipedia", expanded=False
+        ):
+            topico = st.text_input("Digite o tópico que deseja pesquisar")
+
+            if topico:
+                with st.spinner("Pesquisando..."):
+                    q = lookup(
+                        llm=OpenAI(
+                            temperature=0.3,
+                            openai_api_key=st.session_state["OPENAI_API_KEY"],
+                        ),
+                        num_perguntas=3,
+                        text=topico,
+                    )
+                    with st.chat_message("assistant"):
+                        st.write(q)
 
     with st.sidebar:
         st.subheader("Ferramentas")
@@ -212,22 +229,25 @@ def create_config_page():
         "Openai API Key",
         type="password",
         placeholder="Cole sua chave de API aqui (sk-...)",
-        help="Você pode obter sua chave de API em https://platform.openai.com/account/api-keys.",  # noqa: E501
+        help="Você pode obter sua chave de API em https://platform.openai.com/account/api-keys.",
         value=st.session_state.get("OPENAI_API_KEY", ""),
     )
 
     if open_api_key_input:
-        if set_open_api_key(open_api_key_input):
-            st.success("Chave de API válida!")
-        else:
-            st.warning("Chave de API inválida.")
+        with st.spinner("Verificando chave de API..."):
+            if set_open_api_key(open_api_key_input):
+                st.success("Chave de API válida!")
+            else:
+                st.warning("Chave de API inválida.")
+
+    st.markdown(useMarkdown)
 
     if not st.session_state.get("open_api_key_configured"):
         st.error("Configure sua chave Open API!")
         st.session_state.db = None
 
     else:
-        st.markdown("Chave de API aberta configurada!")
+        # st.markdown("Chave de API aberta configurada!")
         db_type = "chroma"
         embeddings = OpenAIEmbeddings(openai_api_key=st.session_state["OPENAI_API_KEY"])
         persist_directory = "/app/src/data/chroma_store/"
