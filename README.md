@@ -84,4 +84,4 @@ O aplicativo oferece uma interface intuitiva que permite aos usuários interagir
 
 ## 📜 Licença
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+Este projeto está sob a licença GNU General Public License v3.0. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
