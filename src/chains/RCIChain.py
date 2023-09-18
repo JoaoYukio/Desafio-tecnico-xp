@@ -16,7 +16,7 @@ from operator import itemgetter
 
 # ? Baseado no artigo: https://arxiv.org/abs/2303.17491
 
-template = "Você é um assistente prestativo que transmite sabedoria e orienta as pessoas com perguntas e respostas precisas. Sua função é criar três perguntas e respostas sobre tópicos de um resumo de um documento."
+template = "Você é um assistente prestativo que transmite sabedoria e orienta as pessoas com perguntas e respostas precisas. Sua função é criar três pontos chaves sobre tópicos de um resumo de um documento."
 system_message_prompt = SystemMessagePromptTemplate.from_template(template)
 human_template = "{question}"
 human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
@@ -25,7 +25,7 @@ chat_prompt = ChatPromptTemplate.from_messages(
     [system_message_prompt, human_message_prompt]
 )
 
-template_critique = "Você é um assistente útil que analisa as perguntas e respostas geradas e descobre se existe algo a melhorar com base no resumo fornecido para gerar as perguntas e respostas."
+template_critique = "Você é um assistente útil que analisa pontos chaves geradas e descobre se existe algo a melhorar com base no resumo fornecido para gerar as perguntas e respostas."
 system_message_prompt_critique = SystemMessagePromptTemplate.from_template(
     template_critique
 )
@@ -38,7 +38,7 @@ critique_prompt = ChatPromptTemplate.from_messages(
     [system_message_prompt_critique, human_message_prompt_critique]
 )
 
-template_imp = "Você é um assistente útil que analisa perguntas e respostas geradas e crítica elas com base no resumo fornecido para gerar as perguntas e escreve uma nova resposta final melhorada."
+template_imp = "Você é um assistente útil que analisa pontos chaves gerados e crítica eles com base no resumo fornecido para gerar os pontos chaves e escreve novos pontos chaves finais melhorados."
 system_message_prompt_imp = SystemMessagePromptTemplate.from_template(template_imp)
 human_template_imp = "### Pergunta:\n\n{question}\n\n ###Resposta dada:{initial_answer}\n\n \
 ###Crítica Construtiva:{constructive_criticism}\n\n Com base nos problemas que você encontrou, melhore sua resposta.\n\n### Resposta Final:"

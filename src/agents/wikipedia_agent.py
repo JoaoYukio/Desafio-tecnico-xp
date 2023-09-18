@@ -19,7 +19,7 @@ def lookup(llm, num_perguntas: int, text: str) -> str:
     Search for a topic in Wikipedia and return the first document.
     """
     template = """
-    Gostaria que criasse {num_perguntas} perguntas interessantes sobre o texto {text} que você acabou de ler.
+    Gostaria que criasse {num_perguntas} pontos interessantes sobre o texto {text} que você acabou de ler.
     """
 
     tools_for_agent = [
