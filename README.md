@@ -81,3 +81,7 @@ O aplicativo oferece uma interface intuitiva que permite aos usuários interagir
 -   [RCI Chain](./docs/rci_chain.md): Saiba mais sobre como o RCI Chain foi utilizado neste projeto.
 -   [RetrievalQA](./docs/RetrievalQA.md): Informações detalhadas sobre RetrievalQA.
 -   [Agents](./docs/agents.md): Informações detalhadas sobre agentes.
+
+## 📜 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
