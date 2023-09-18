@@ -4,11 +4,11 @@ Este repositório contém o projeto desenvolvido como parte de um desafio propos
 
 ## 📌 Índice
 
--   [Pré-requisitos](#pré-requisitos)
--   [Instalação](#instalação)
--   [Uso](#uso)
--   [Documentações Adicionais](#documentações-adicionais)
--   [Licença](#licença)
+-   [Pré-requisitos](#-pré-requisitos)
+-   [Instalação](#-instalação)
+-   [Uso](#-uso)
+-   [Documentações Adicionais](#-documentações-adicionais)
+-   [Licença](#-licença)
 
 ## 🛠 Pré-requisitos
 
@@ -53,6 +53,8 @@ Construa a imagem Docker e execute o container:
 docker build -t desafio-tecnico-xp .
 docker run -p 8080:8080 desafio-tecnico-xp
 ```
+
+Após executar o container, acesse a aplicação em http://localhost:8080.
 
 ## 🖥 Uso
 
