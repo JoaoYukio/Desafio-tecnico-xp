@@ -96,7 +96,7 @@ def create_chat_page():
                 #     text=qText,
                 # )
 
-                q = chain_RCI(qText, st.session_state["OPEN_API_KEY"])
+                q = chain_RCI(qText, st.session_state["OPENAI_API_KEY"])
 
                 with st.chat_message("assistant"):
                     st.write(q)

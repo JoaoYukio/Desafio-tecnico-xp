@@ -16,7 +16,7 @@ from operator import itemgetter
 
 # ? Baseado no artigo: https://arxiv.org/abs/2303.17491
 
-template = "Você é um assistente prestativo que transmite sabedoria e orienta as pessoas com perguntas e respostas precisas. Sua função é criar três pontos chaves sobre tópicos de um resumo de um documento."
+template = "Você é um assistente prestativo que transmite sabedoria e orienta as pessoas com perguntas e respostas precisas. Sua função é criar três pontos chaves em português brasileiro sobre tópicos de um resumo de um documento."
 system_message_prompt = SystemMessagePromptTemplate.from_template(template)
 human_template = "{question}"
 human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
