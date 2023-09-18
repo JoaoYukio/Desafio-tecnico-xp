@@ -59,7 +59,6 @@ def create_chat_page():
 
             res = qa({"query": b})
 
-            #! TODO: Adicionar quais textos foram feito upload e criar um template para perguntar coisas especificas
             #! TODO: Adicionar memory
             with st.chat_message("user"):
                 st.markdown(b)
