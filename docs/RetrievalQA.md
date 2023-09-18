@@ -10,12 +10,6 @@ A principal maneira pela qual a maioria das pessoas - incluindo a LangChain - te
 
 ![Busca Semântica](https://github.com/JoaoYukio/Desafio-tecnico-xp/blob/638d62f5d8abf8061c70e126f3b589f185e7bd56/docs/imgs/semantic_search.png)
 
-## Problemas e Soluções
-
-A LangChain identificou algumas limitações em suas abstrações iniciais e fez ajustes para tornar mais fácil a utilização de outros métodos de recuperação além do objeto LangChain VectorDB. A ideia é permitir que os recuperadores construídos em outros lugares sejam usados mais facilmente na LangChain e incentivar mais experimentação com métodos alternativos de recuperação.
-
-### Interface do Retriever
-
-A LangChain introduziu o conceito de um Retriever, que é esperado para expor um método `get_relevant_documents` com a seguinte assinatura: `def get_relevant_documents(self, query: str) -> List[Document]`. Essa é a única suposição feita sobre os Retrievers.
+## Informações Extras
 
 Para mais detalhes e informações avançadas sobre RetrievalQA e como ele funciona com um banco de dados vetorial, consulte a [documentação oficial da LangChain](https://blog.langchain.dev/retrieval/).
