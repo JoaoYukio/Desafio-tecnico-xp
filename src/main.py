@@ -2,7 +2,7 @@ import streamlit as st
 from PyPDF2 import PdfReader
 from streamlit_option_menu import option_menu
 
-from streamlitPages.createPages import create_chat_page, create_config_page
+from streamlitPages.create_pages import create_chat_page, create_config_page
 
 
 def main():

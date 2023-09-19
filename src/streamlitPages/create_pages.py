@@ -6,20 +6,20 @@ from dotenv import load_dotenv
 from langchain.llms import OpenAI
 from langchain.chains import RetrievalQA
 
-from markdownText.databaseMarkdown import MARKDOWN as databaseMarkdown
-from markdownText.RCIMarkdown import MARKDOWN as RCIMarkdown
-from markdownText.OpenAIKeyMarkdown import MARKDOWN as OpenAIKeyMarkdown
-from markdownText.useMarkdown import MARKDOWN as useMarkdown
+from markdownText.database_markdown import MARKDOWN as databaseMarkdown
+from markdownText.RCI_markdown import MARKDOWN as RCIMarkdown
+from markdownText.open_aikey_markdown import MARKDOWN as OpenAIKeyMarkdown
+from markdownText.use_markdown import MARKDOWN as useMarkdown
 
-from utils.pdfReader import read_pdf, save_pdf_to_folder
+from utils.pdf_reader import read_pdf, save_pdf_to_folder
 from utils.summarize import summarize
 from agents.wikipedia_agent import lookup
-from utils.testOpenAIKey import is_api_key_valid
+from utils.test_openAIKey import is_api_key_valid
 
 from langchain.document_loaders import PyPDFLoader
 from PyPDF2 import PdfReader
 
-from utils.saveJson import load_uploaded_files, save_uploaded_files
+from utils.save_json import load_uploaded_files, save_uploaded_files
 
 from chains.RCIChain import chain_RCI
 
