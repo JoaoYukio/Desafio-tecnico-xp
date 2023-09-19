@@ -52,7 +52,13 @@ def create_chat_page():
                     temperature=0.3, openai_api_key=st.session_state["OPENAI_API_KEY"]
                 ),
                 chain_type="stuff",
-                retriever=st.session_state.db.get_vector_store().as_retriever(),
+                retriever=st.session_state.db.get_vector_store().as_retriever(
+                    search_type="similarity_score_threshold",
+                    search_kwargs={
+                        "score_threshold": 0.8,
+                        "k": 2,
+                    },
+                ),
                 return_source_documents=True,
             )
             # st.write(st.session_state.db.query(b))
