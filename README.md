@@ -18,13 +18,6 @@ Antes de começar, certifique-se de ter as seguintes ferramentas instaladas em s
 
     -   [Download Python](https://www.python.org/downloads/)
 
--   **Pipenv**: Uma ferramenta de gerenciamento de dependências e ambiente virtual para Python.
-
-    -   Instalação:
-        ```bash
-        pip install pipenv
-        ```
-
 -   **Docker**: Uma plataforma para desenvolver, enviar e executar aplicações em containers.
 
     -   [Download Docker](https://www.docker.com/products/docker-desktop)
