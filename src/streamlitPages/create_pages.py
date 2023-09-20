@@ -21,7 +21,7 @@ from PyPDF2 import PdfReader
 
 from utils.save_json import load_uploaded_files, save_uploaded_files
 
-from chains.RCIChain import chain_RCI
+from chains.RCI_chain import chain_RCI
 
 # from utils.ocr import img_to_text
 # from PIL import Image
