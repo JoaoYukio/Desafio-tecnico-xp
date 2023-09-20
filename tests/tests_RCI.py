@@ -3,7 +3,7 @@ import sys
 sys.path.append("D:\MestradoUnifei\desafioXP\Desafio-tecnico-xp")
 # ver uma forma melhor de passar o path, talvez rodando do terminal e do Desafio-tecnico-xp
 
-from src.chains.RCIChain import chain_RCI
+from src.chains.RCI_chain import chain_RCI
 
 
 def test_correction():
